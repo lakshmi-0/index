@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Curry Sales System</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-image: url('https://c8.alamy.com/comp/2F5B8WA/traditional-indian-foods-arranged-as-collage-of-the-cuisine-2F5B8WA.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      width: 50%;
+      margin: auto;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 50px;
+    }
+    h1 {
+      text-align: center;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    select, input, button {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    button {
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      padding: 10px;
+      margin-top: 10px;
+    }
+    .save-btn {
+      background-color: darkblue;
+      color: white;
+    }
+    .save-btn:hover {
+      background-color: #45a049;
+    }
+    .cart-section {
+      margin-top: 20px;
+      padding: 10px;
+      background: #f7f7f7;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    table, th, td {
+      border: 1px solid rgba(0, 0, 0, 0.3);
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+      background-color: rgba(0, 0, 0, 0.2);
+      color: black;
+    }
+    th {
+      background-color: rgba(0, 0, 0, 0.3);
+    }
+    .totals {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+    .item span {
+      flex: 1;
+      margin-right: 10px;
+    }
+    .remove-btn {
+      background-color: red;
+      color: white;
+      width: 80px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Curry Sales System with Leftovers and History</h1>
+    
+    <div class="form-group">
+      <label for="saleDate">Sale Date:</label>
+      <input type="date" id="saleDate" name="sale_date">
+    </div><br>
+
+    <div class="form-group">
+      <label for="placeSelect">Select Place:</label>
+      <select id="placeSelect">
+        <option value="miyapur">Miyapur</option>
+        <option value="ameerpet">Ameerpet</option>
+        <option value="oldcity">Old City</option>
+      </select>
+    </div><br>
+
+    <div class="form-group">
+      <label for="currySelect">Select Curry:</label>
+      <select id="currySelect">
+        <optgroup label="Vegetarian">
+          <option value="potato">Potato Curry</option>
+          <option value="ladyfinger">Lady Finger Curry</option>
+          <option value="cabbage">Cabbage Fry</option>
+          <option value="cashew">Cashew Fry</option>
+          <option value="paneer">Paneer Curry</option>
+          <option value="dal">Dal Curry</option>
+          <option value="sambar">Sambar</option>
+          <option value="rasam">Rasam</option>
+        </optgroup>
+        <optgroup label="Non-Vegetarian">
+          <option value="mutton">Mutton Curry</option>
+          <option value="prawns">Prawns Curry</option>
+          <option value="crab">Crab Fry (Pithalu)</option>
+          <option value="chicken">Chicken Curry</option>
+          <option value="fish">Fish Curry</option>
+        </optgroup>
+      </select>
+    </div><br>
+
+    <div class="form-group">
+      <label for="quantity">Quantity Sold (in kgs):</label>
+      <input type="number" id="quantity" min="1" value="1">
+    </div><br>
+
+    <div class="form-group">
+      <label for="leftover">Leftover Quantity (in kgs):</label>
+      <input type="number" id="leftover" min="0" value="0">
+    </div><br>
+
+    <div class="form-group">
+      <label for="price">Price per kg (in ₹):</label>
+      <input type="number" id="price" min="0" placeholder="Enter price for the selected curry">
+    </div><br>
+
+    <button class="save-btn" onclick="addToCart()">Add to Cart</button>
+
+    <div id="cart">
+      <h2 class="section-heading">Cart</h2>
+
+      <h3>Miyapur</h3>
+      <div id="cartMiyapur" class="cart-section"></div>
+      <p class="total">Miyapur Total: ₹<span id="totalMiyapur">0</span></p>
+
+      <h3>Ameerpet</h3>
+      <div id="cartAmeerpet" class="cart-section"></div>
+      <p class="total">Ameerpet Total: ₹<span id="totalAmeerpet">0</span></p>
+
+      <h3>Old City</h3>
+      <div id="cartOldCity" class="cart-section"></div>
+      <p class="total">Old City Total: ₹<span id="totalOldCity">0</span></p>
+    </div>
+
+    <div id="annualTotal">
+      <h1> Annual Total: ₹<span id="totalAnnual">0</span></h1>
+    </div>
+
+    <button class="save-btn" onclick="saveSalesData()">Save Sales Data</button>
+
+    <div class="form-group">
+      <label for="historyDate" class="section-heading">Select Date for History:</label>
+      <input type="date" id="historyDate">
+    </div>
+
+    <button class="save-btn" onclick="showHistory()">Show History</button>
+    <button class="save-btn" onclick="printHistory()">Print History</button>
+
+    <div id="salesTableContainer" style="margin-top: 20px;">
+      <table id="salesTable">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Place</th>
+            <th>Curry</th>
+            <th>Quantity (kg)</th>
+            <th>Leftover (kg)</th>
+            <th>Price (₹/kg)</th>
+            <th>Total (₹)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Sales data will be dynamically inserted here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    let cartMiyapur = [];
+    let cartAmeerpet = [];
+    let cartOldCity = [];
+
+    function addToCart() {
+      const placeSelect = document.getElementById("placeSelect").value;
+      const curryName = document.getElementById("currySelect").options[document.getElementById("currySelect").selectedIndex].text;
+      const quantity = parseFloat(document.getElementById("quantity").value);
+      const leftover = parseFloat(document.getElementById("leftover").value);
+      const price = parseFloat(document.getElementById("price").value);
+
+      if (isNaN(quantity) || isNaN(leftover) || isNaN(price) || quantity <= 0 || leftover < 0 || price < 0) {
+        alert("Please enter valid values for quantity, leftover, and price.");
+        return;
+      }
+
+      const soldQuantity = quantity - leftover;
+      const total = soldQuantity * price;
+      const item = { curry: curryName, quantity: soldQuantity, leftover, price, total };
+
+      switch (placeSelect) {
+        case "miyapur":
+          cartMiyapur.push(item);
+          updateCart("cartMiyapur", cartMiyapur);
+          break;
+        case "ameerpet":
+          cartAmeerpet.push(item);
+          updateCart("cartAmeerpet", cartAmeerpet);
+          break;
+        case "oldcity":
+          cartOldCity.push(item);
+          updateCart("cartOldCity", cartOldCity);
+          break;
+      }
+
+      document.getElementById("quantity").value = 1; // Reset quantity
+      document.getElementById("leftover").value = 0; // Reset leftover
+      document.getElementById("price").value = ""; // Reset price
+    }
+
+    function updateCart(cartId, cart) {
+      const cartSection = document.getElementById(cartId);
+      cartSection.innerHTML = "";
+      let total = 0;
+
+      cart.forEach((item, index) => {
+        total += item.total;
+        cartSection.innerHTML += `
+          <div class="item">
+            <span>${item.curry} - Sold: ${item.quantity} kg, Leftover: ${item.leftover} kg</span>
+            <button class="remove-btn" onclick="removeFromCart('${placeSelect}', ${index})">Remove</button>
+          </div>
+        `;
+      });
+
+      document.getElementById(`total${capitalizeFirstLetter(cartId.replace('cart', ''))}`).innerText = total.toFixed(2);
+      updateAnnualTotal();
+    }
+
+    function removeFromCart(place, index) {
+      switch (place) {
+        case "miyapur":
+          cartMiyapur.splice(index, 1);
+          updateCart("cartMiyapur", cartMiyapur);
+          break;
+        case "ameerpet":
+          cartAmeerpet.splice(index, 1);
+          updateCart("cartAmeerpet", cartAmeerpet);
+          break;
+        case "oldcity":
+          cartOldCity.splice(index, 1);
+          updateCart("cartOldCity", cartOldCity);
+          break;
+      }
+    }
+
+    function updateAnnualTotal() {
+      const totalAnnual = parseFloat(document.getElementById("totalMiyapur").innerText) +
+                          parseFloat(document.getElementById("totalAmeerpet").innerText) +
+                          parseFloat(document.getElementById("totalOldCity").innerText);
+      document.getElementById("totalAnnual").innerText = totalAnnual.toFixed(2);
+    }
+
+    function saveSalesData() {
+      const salesData = {
+        date: document.getElementById("saleDate").value,
+        miyapur: cartMiyapur,
+        ameerpet: cartAmeerpet,
+        oldcity: cartOldCity
+      };
+
+      const dateKey = salesData.date;
+      localStorage.setItem(`salesData_${dateKey}`, JSON.stringify(salesData));
+      alert("Sales data saved!");
+    }
+
+    function showHistory() {
+      const historyDate = document.getElementById("historyDate").value;
+      const salesData = localStorage.getItem(`salesData_${historyDate}`);
+
+      if (!salesData) {
+        alert("No sales data found for the selected date.");
+        return;
+      }
+
+      const parsedSalesData = JSON.parse(salesData);
+      const salesTableBody = document.querySelector("#salesTable tbody");
+      salesTableBody.innerHTML = ""; // Clear previous data
+
+      for (const [place, sales] of Object.entries(parsedSalesData)) {
+        if (place !== 'date') {
+          sales.forEach(item => {
+            salesTableBody.innerHTML += `
+              <tr>
+                <td>${parsedSalesData.date}</td>
+                <td>${place}</td>
+                <td>${item.curry}</td>
+                <td>${item.quantity}</td>
+                <td>${item.leftover}</td>
+                <td>₹${item.price}</td>
+                <td>₹${item.total.toFixed(2)}</td>
+              </tr>
+            `;
+          });
+        }
+      }
+    }
+
+    function printHistory() {
+      const historyDate = document.getElementById("historyDate").value;
+      const placeSelect = document.getElementById("placeSelect").value;
+      const salesData = localStorage.getItem(`salesData_${historyDate}`);
+
+      if (!salesData) {
+        alert("No sales data found for the selected date.");
+        return;
+      }
+
+      const parsedSalesData = JSON.parse(salesData);
+      let printContent = `<h1>Sales History for ${historyDate} - ${placeSelect}</h1>`;
+      printContent += `<table border="1"><thead><tr>
+            <th>Date</th>
+            <th>Place</th>
+            <th>Curry</th>
+            <th>Quantity (kg)</th>
+            <th>Leftover (kg)</th>
+            <th>Price (₹/kg)</th>
+            <th>Total (₹)</th>
+          </tr></thead><tbody>`;
+
+      function addRowsForPlace(sales) {
+        sales.forEach((item) => {
+          printContent += `
+              <tr>
+                <td>${parsedSalesData.date}</td>
+                <td>${placeSelect}</td>
+                <td>${item.curry}</td>
+                <td>${item.quantity}</td>
+                <td>${item.leftover}</td>
+                <td>₹${item.price}</td>
+                <td>₹${item.total.toFixed(2)}</td>
+              </tr>`;
+        });
+      }
+
+      switch (placeSelect) {
+        case "miyapur":
+          addRowsForPlace(parsedSalesData.miyapur);
+          break;
+        case "ameerpet":
+          addRowsForPlace(parsedSalesData.ameerpet);
+          break;
+        case "oldcity":
+          addRowsForPlace(parsedSalesData.oldcity);
+          break;
+      }
+
+      printContent += `</tbody></table>`;
+
+      const printWindow = window.open('', '', 'height=600,width=800');
+      printWindow.document.write(`<html><head><title>Print History</title></head><body>${printContent}</body></html>`);
+      printWindow.document.close();
+      printWindow.print();
+    }
+
+    function capitalizeFirstLetter(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+  </script>
+</body>
+</html>
